@@ -1,0 +1,89 @@
+
+```{r}
+data <- read.table("gauge.txt", header=TRUE)
+data
+```
+```{r}
+
+fit <- lm(formula = density ~ gain,data)
+summary(fit)
+plot(data$gain,data$density,ylab="Density",xlab="Gain",main="Linear Regression: Density by Gain")
+abline(fit, col="red")
+```
+
+
+```{r}
+
+plot(fit$residuals,ylab="Residuals", main="Residual Plot of Linear Regression: (Density by Gain)")
+abline(0,0, col="red")
+
+qqnorm(fit$residuals,main="Normal Q-Q Plot of Residuals: (Density by Gain)")
+qqline(fit$residuals, col="red")
+```
+
+Confirming the fit sucks, by residual plot.
+
+Lets try log transformation on gain.
+
+
+```{r}
+
+fit1 <- lm(formula = density ~ log(gain),data)
+summary(fit1)
+plot(log(data$gain),data$density,ylab="Density",xlab="Natural Log of Gain",main="Linear Regression: Density by Log(Gain)")
+abline(fit1, col="red")
+
+```
+That looks better
+
+```{r}
+
+plot(fit1$residuals,ylab="Residuals", main="Residual Plot of Linear Regression: (Density by Log(Gain))")
+abline(0,0, col="red")
+hist(fit1$residuals)
+
+qqnorm(fit1$residuals,main="Normal Q-Q Plot of Residuals: (Density by Log(Gain))")
+qqline(fit1$residuals, col="red")
+```
+```{r}
+
+new = data.frame(gain=seq(1,500))
+new
+png(file="LinRegLogGainDensityIntervalEstimate.png",width=720,height=480)
+
+pred = predict(fit1, new, interval="prediction")
+plot(log(data$gain),data$density,ylab="Density",xlab="Log(Gain)",main="Linear Regression: Density by Log(Gain) (With Interval Estimates)")
+abline(fit1, col="red")
+
+legend("topright",c("Interval Estimate Upper Bound","Regression Line","Interval Estimate Lower Bound"), # puts text in the legend
+
+lty=c(1,1,1), # gives the legend appropriate symbols (lines)
+
+lwd=c(2.5,2.5,2.5),col=c("Green","Red","Blue")) # gives the legend lines the correct color and width
+
+lines(log(seq(1,500)),pred[,2],lty=2,col='blue')
+lines(log(seq(1,500)),pred[,3],lty=2,col="green")
+dev.off()
+help(lines)
+```
+
+
+
+```{r}
+dens <- subset(data, density != .508)
+
+predictedValue = data.frame(gain=38.6)
+fit2 <- lm(formula = density ~ log(gain),dens)
+predict(fit2,predictedValue,interval="prediction")
+
+
+```
+```{r}
+dens <- subset(data, density != .001)
+
+predictedValue = data.frame(gain=426.7)
+fit2 <- lm(formula = density ~ log(gain),dens)
+predict(fit2,predictedValue,interval="prediction")
+
+
+```
