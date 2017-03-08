@@ -1,0 +1,26 @@
+
+#Initial Regression
+```{r}
+fit0<-lm(formula = data$density~data$gain)
+abline(fit0, col="red")
+plot(fit0$residuals)
+abline(0,0,col="red")
+```
+
+```{r}
+ plot(data$gain,data$density)
+newdata = log(data$gain)
+plot(newdata, data$density)
+
+```
+
+#Regression on New Data
+```{r}
+plot(newdata, data$density)
+fit<-lm(formula=data$density~newdata)
+abline(fit,col="red")
+plot(fit$residuals)
+abline(0,0,col="red")
+hist(fit$residuals, breaks=20, xlab="residuals", main="Histogram of Residuals")
+```
+
